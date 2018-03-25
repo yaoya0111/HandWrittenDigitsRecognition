@@ -1,5 +1,5 @@
 # DeepLearning
-##基于深度学习的手写数字识别(毕业设计课题)
+基于深度学习的手写数字识别(毕业设计课题)
 
 TensorFlow and Deep Learning without a PhD, Part 1 (Google Cloud Next '17)
 
