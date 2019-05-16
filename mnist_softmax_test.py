@@ -13,11 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import tensorflow as tf
 import tensorflowvisu
 from tensorflow.examples.tutorials.mnist import input_data as mnist_data
+
 print("Tensorflow version " + tf.__version__)
 tf.set_random_seed(0)
+#initial the save path
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+sess = tf.Session(config=config)
+
 
 # neural network with 1 layer of 10 softmax neurons
 #
@@ -44,16 +51,16 @@ X = tf.placeholder(tf.float32, [None, 28, 28, 1])
 # correct answers will go here
 Y_ = tf.placeholder(tf.float32, [None, 10])
 # weights W[784, 10]   784=28*28
-W = tf.Variable(tf.zeros([784, 10]),name="W")
+W = tf.Variable(tf.zeros([784, 10]))
 # biases b[10]
-b = tf.Variable(tf.zeros([10]),name="b")
+b = tf.Variable(tf.zeros([10]))
 
 # flatten the images into a single line of pixels
 # -1 in the shape definition means "the only possible dimension that will preserve the number of elements"
-XX = tf.reshape(X, [-1, 784])
+XX = tf.reshape(X, [-1, 784],name="input_feed")
 
 # The model
-Y = tf.nn.softmax(tf.matmul(XX, W) + b)
+Y = tf.nn.softmax((tf.matmul(XX, W) + b),name="operator_restore")
 
 # loss function: cross-entropy = - sum( Y_i * log(Yi) )
 #                           Y: the computed output vector
@@ -63,7 +70,7 @@ Y = tf.nn.softmax(tf.matmul(XX, W) + b)
 # log takes the log of each element, * multiplies the tensors element by element
 # reduce_mean will add all the components in the tensor
 # so here we end up with the total cross-entropy for all images in the batch
-cross_entropy = -tf.reduce_mean(Y_ * tf.log(Y)) * 1000.0  # normalized for batches of 100 images,
+cross_entropy = -tf.reduce_sum(Y_ * tf.log(Y)) * 1000.0  # normalized for batches of 100 images,
                                                           # *10 because  "mean" included an unwanted division by 10
 
 # accuracy of the trained model, between 0 (worst) and 1 (best)
@@ -90,10 +97,10 @@ sess.run(init)
 def training_step(i, update_test_data, update_train_data):
 
     # training on batches of 100 images with 100 labels
-    batch_X, batch_Y =  mnist.train.next_batch(100)
+    batch_X, batch_Y = mnist.train.next_batch(100)
 
     # compute training values for visualisation
-    if update_train_data:
+    if update_train_data: 
         a, c, im, w, b = sess.run([accuracy, cross_entropy, I, allweights, allbiases], feed_dict={X: batch_X, Y_: batch_Y})
         datavis.append_training_curves_data(i, a, c)
         datavis.append_data_histograms(i, w, b)
@@ -110,19 +117,19 @@ def training_step(i, update_test_data, update_train_data):
     # the backpropagation training step
     sess.run(train_step, feed_dict={X: batch_X, Y_: batch_Y})
 
-
 datavis.animate(training_step, iterations=2000+1, train_data_update_freq=10, test_data_update_freq=50, more_tests_at_start=True)
 
 # to save the animation as a movie, add save_movie=True as an argument to datavis.animate
 # to disable the visualisation use the following line instead of the datavis.animate line
-#for i in range(2000): training_step(i, i % 50 == 0, i % 10 == 0)
+#for i in range(1000): training_step(i, i % 50 == 0, i % 10 == 0)
 
 print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
 
 # final max test accuracy = 0.9268 (10K iterations). Accuracy should peak above 0.92 in the first 2000 iterations.
 
-saver = tf.train.Saver()
-md_path = R"C:\Users\yaoya\AppData\Local\conda\conda\envs\tensorflow\tensorflow-mnist-tutorial\TestProject\mdlib\md1\init"
+
+saver=tf.train.Saver()
+md_path = R"C:\Users\yaoya\AppData\Local\conda\conda\envs\tensorflow\tensorflow-mnist-tutorial\TestProject\mdlib\md1"
 # Later, launch the model, initialize the variables, do some work, save the
 # variables to disk.
 sess.run(init)

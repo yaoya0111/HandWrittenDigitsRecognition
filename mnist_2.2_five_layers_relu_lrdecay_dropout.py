@@ -65,7 +65,7 @@ W5 = tf.Variable(tf.truncated_normal([O, 10], stddev=0.1))
 B5 = tf.Variable(tf.zeros([10]))
 
 # The model, with dropout at each layer
-XX = tf.reshape(X, [-1, 28*28])
+XX = tf.reshape(X, [-1, 28*28],name="input_feed")
 
 Y1 = tf.nn.relu(tf.matmul(XX, W1) + B1)
 Y1d = tf.nn.dropout(Y1, pkeep)
@@ -80,7 +80,7 @@ Y4 = tf.nn.relu(tf.matmul(Y3d, W4) + B4)
 Y4d = tf.nn.dropout(Y4, pkeep)
 
 Ylogits = tf.matmul(Y4d, W5) + B5
-Y = tf.nn.softmax(Ylogits)
+Y = tf.nn.softmax(tf.matmul(Y4d, W5) + B5,name="operator_restore")
 
 # cross-entropy loss function (= -sum(Y_i * log(Yi)) ), normalised for batches of 100  images
 # TensorFlow provides the softmax_cross_entropy_with_logits function to avoid numerical stability
@@ -138,11 +138,11 @@ def training_step(i, update_test_data, update_train_data):
     # the backpropagation training step
     sess.run(train_step, {X: batch_X, Y_: batch_Y, pkeep: 0.75, lr: learning_rate})
 
-datavis.animate(training_step, iterations=10000+1, train_data_update_freq=20, test_data_update_freq=100, more_tests_at_start=True)
+#datavis.animate(training_step, iterations=10000+1, train_data_update_freq=20, test_data_update_freq=100, more_tests_at_start=True)
 
 # to save the animation as a movie, add save_movie=True as an argument to datavis.animate
 # to disable the visualisation use the following line instead of the datavis.animate line
-# for i in range(10000+1): training_step(i, i % 100 == 0, i % 20 == 0)
+for i in range(10000+1): training_step(i, i % 100 == 0, i % 20 == 0)
 
 print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
 
@@ -165,3 +165,11 @@ print("max test accuracy: " + str(datavis.get_max_test_accuracy()))
 # final test accuracy = 0.9746 (sigmoid - training cross-entropy not stabilised)
 # final test accuracy = 0.9824 (relu, training cross-entropy down to 0, test cross-entropy goes up significantly, test accuracy stable around 98.2)
 # on another run, peak at 0.9836
+
+saver = tf.train.Saver()
+md_path = R"C:\Users\yaoya\AppData\Local\conda\conda\envs\tensorflow\tensorflow-mnist-tutorial\TestProject\mdlib\md2\init"
+# Later, launch the model, initialize the variables, do some work, save the
+# variables to disk.
+sess.run(init)
+save_path = saver.save(sess, md_path, global_step=1000)
+print("Model saved in file: %s" % save_path)

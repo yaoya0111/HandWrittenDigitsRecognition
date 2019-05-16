@@ -1,0 +1,6 @@
+
+C:\Users\yaoya\AppData\Local\conda\conda\envs\tensorflow\tensorflow-mnist-tutorial\TestProject\mdlib\md3\init-1000.meta
+
+
+
+C:\Users\yaoya\AppData\Local\conda\conda\envs\tensorflow\tensorflow-mnist-tutorial\TestProject\mdlib\md3
