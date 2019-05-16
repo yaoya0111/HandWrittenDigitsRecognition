@@ -1,6 +1,6 @@
 # 基于深度学习的手写数字识别(毕业设计课题)
 Testproject文件夹的文件包括的是程序界面。
-程序的过程和具体文件功能介绍都写在了[这里](https://www.cnblogs.com/smonlky/articles/9259577.html)
+程序的运行过程、结果和具体文件功能介绍都写在了[这里](https://www.cnblogs.com/smonlky/articles/9259577.html)
 
 几个模型都是照搬的，模型保存加载预测过程和预处理部分是自己写的。
 
